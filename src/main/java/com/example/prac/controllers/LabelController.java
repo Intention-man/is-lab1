@@ -3,8 +3,6 @@ package com.example.prac.controllers;
 import com.example.prac.DTO.data.LabelDTOResponse;
 import com.example.prac.DTO.data.LabelDTOwId;
 import com.example.prac.model.authEntity.User;
-import com.example.prac.model.dataEntity.Label;
-import com.example.prac.service.data.LabelService;
 import com.example.prac.utils.DtoUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

@@ -7,7 +7,6 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +15,9 @@ import java.util.Optional;
 @Repository
 public class AdminRequestRepository {
 
-    private final SessionFactory sessionFactory;    public void save(AdminRequest adminRequest) {
+    private final SessionFactory sessionFactory;
+
+    public void save(AdminRequest adminRequest) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -28,11 +29,13 @@ public class AdminRequestRepository {
             }
             throw e;
         }
-    }    public AdminRequest findById(Long id) {
+    }
+
+    public AdminRequest findById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             return session.get(AdminRequest.class, id);
-        }catch (Exception e){
-                        return null;
+        } catch (Exception e) {
+            return null;
         }
     }
 
@@ -44,7 +47,9 @@ public class AdminRequestRepository {
                     .uniqueResult();
             return Optional.ofNullable(result);
         }
-    }    public void update(AdminRequest adminRequest) {
+    }
+
+    public void update(AdminRequest adminRequest) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -56,7 +61,9 @@ public class AdminRequestRepository {
             }
             throw e;
         }
-    }    @SuppressWarnings("unchecked")
+    }
+
+    @SuppressWarnings("unchecked")
     public List<AdminRequest> findAll() {
         try (Session session = sessionFactory.openSession()) {
             return session.createQuery("from AdminRequest").list();

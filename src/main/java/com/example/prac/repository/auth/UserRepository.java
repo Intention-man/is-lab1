@@ -9,11 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+
 @AllArgsConstructor
 @Repository
 public class UserRepository {
 
-    private final SessionFactory sessionFactory;    public void save(User user) {
+    private final SessionFactory sessionFactory;
+
+    public void save(User user) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
@@ -25,14 +28,9 @@ public class UserRepository {
             }
             e.printStackTrace();
         }
-    }    public Optional<User> findById(Long id) {
-        try (Session session = sessionFactory.openSession()) {
-            return Optional.ofNullable(session.get(User.class, id));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
-    }    public Optional<User> findByUsername(String username) {
+    }
+
+    public Optional<User> findByUsername(String username) {
         try (Session session = sessionFactory.openSession()) {
             var query = session.createQuery("FROM User WHERE username = :username", User.class);
             query.setParameter("username", username);
@@ -41,26 +39,13 @@ public class UserRepository {
             e.printStackTrace();
             return Optional.empty();
         }
-    }    public void update(User user) {
+    }
+
+    public void update(User user) {
         Transaction transaction = null;
         try (Session session = sessionFactory.openSession()) {
             transaction = session.beginTransaction();
             session.update(user);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-    }    public void deleteById(Long id) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            User user = session.get(User.class, id);
-            if (user != null) {
-                session.delete(user);
-            }
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {

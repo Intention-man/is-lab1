@@ -1,11 +1,6 @@
 package com.example.prac.model.authEntity;
 
-import com.example.prac.model.dataEntity.Album;
-import com.example.prac.model.dataEntity.Coordinates;
-import com.example.prac.model.dataEntity.Label;
-import com.example.prac.model.dataEntity.MusicBand;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.example.prac.model.dataEntity.Dragon;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,7 +35,7 @@ public class User implements UserDetails {
     private Role role;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<MusicBand> musicBands;
+    private List<Dragon> musicBands;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

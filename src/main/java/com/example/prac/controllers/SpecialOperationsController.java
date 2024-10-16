@@ -2,8 +2,6 @@ package com.example.prac.controllers;
 
 import com.example.prac.DTO.data.MusicDTOResponse;
 import com.example.prac.model.authEntity.User;
-import com.example.prac.model.dataEntity.MusicBand;
-import com.example.prac.service.data.MusicService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

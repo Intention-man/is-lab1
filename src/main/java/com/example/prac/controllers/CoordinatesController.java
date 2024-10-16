@@ -3,8 +3,6 @@ package com.example.prac.controllers;
 import com.example.prac.DTO.data.CoordinatesDTOResponse;
 import com.example.prac.DTO.data.CoordinatesDTOwId;
 import com.example.prac.model.authEntity.User;
-import com.example.prac.model.dataEntity.Coordinates;
-import com.example.prac.service.data.CoordinatesService;
 import com.example.prac.utils.DtoUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

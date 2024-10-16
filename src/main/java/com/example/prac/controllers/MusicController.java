@@ -1,10 +1,6 @@
 package com.example.prac.controllers;
 
-import com.example.prac.DTO.data.*;
-import com.example.prac.model.dataEntity.MusicBand;
-import com.example.prac.model.dataEntity.MusicGenre;
 import com.example.prac.model.authEntity.User;
-import com.example.prac.service.data.MusicService;
 import com.example.prac.utils.DtoUtil;
 import com.example.prac.webSocket.MusicWebSocketHandler;
 import jakarta.validation.Valid;
@@ -17,7 +13,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

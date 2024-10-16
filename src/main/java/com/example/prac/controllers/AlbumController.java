@@ -3,8 +3,6 @@ package com.example.prac.controllers;
 import com.example.prac.DTO.data.AlbumDTOwId;
 import com.example.prac.DTO.data.BestAlbumDTOResponse;
 import com.example.prac.model.authEntity.User;
-import com.example.prac.model.dataEntity.Album;
-import com.example.prac.service.data.AlbumService;
 import com.example.prac.utils.DtoUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;

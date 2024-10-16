@@ -8,19 +8,16 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Coordinates {
+public class DragonHead {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, unique = true)
     private long id;
 
-    @Column(name = "x")
-    private float x;
-
-    @NotNull(message = "Y cannot be null")
-    @Column(name = "y", nullable = false)
-    private Long y;
+    @Min(value = 1, message = "Size must be greater than 0")
+    @Column(name = "size", nullable = false)
+    private long size;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "owner_id")
