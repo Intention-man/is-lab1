@@ -5,7 +5,6 @@ import com.example.prac.mappers.impl.AdminRequestMapper;
 import com.example.prac.model.authEntity.AdminRequest;
 import com.example.prac.model.authEntity.User;
 import com.example.prac.service.auth.AdminRequestService;
-import com.example.prac.service.auth.AuthenticationService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +20,6 @@ import java.util.*;
 public class AdminRequestController {
 
     private final AdminRequestService adminRequestService;
-    private final AuthenticationService authenticationService;
     private final AdminRequestMapper adminRequestMapper;
 
     @PostMapping("/request")
@@ -30,8 +28,7 @@ public class AdminRequestController {
         User currentUser = (User) authentication.getPrincipal();
         AdminRequest adminRequest = new AdminRequest();
         adminRequest.setRequester(currentUser);
-        adminRequest.setApprovedByAll(false);
-        adminRequest.setApprovedBy(new ArrayList<>());
+        adminRequest.setApproved(false);
         if (adminRequestService.createAdminRequest(adminRequest)) {
             return ResponseEntity.status(HttpStatus.CREATED).body("Запрос на админку создан.");
         } else {
@@ -40,21 +37,15 @@ public class AdminRequestController {
     }
 
     @GetMapping("/status")
-    public ResponseEntity<Map<String, Object>> getAdminRequestStatus() {
+    public ResponseEntity<Boolean> getAdminRequestStatus() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User currentUser = (User) authentication.getPrincipal();
         Optional<AdminRequest> existingRequest = adminRequestService.findByRequester(currentUser);
 
-        Map<String, Object> response = new HashMap<>();
-
         if (existingRequest.isPresent()) {
-            response.put("status", existingRequest.get().isApprovedByAll() ? "approved" : "pending");
-            response.put("message", existingRequest.get().isApprovedByAll() ? "You are now an admin!" : "Your request is being processed...");
-        } else {
-            response.put("status", "none");
+            return ResponseEntity.ok(true);
         }
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(false);
     }
 
     @GetMapping("/all")
@@ -82,7 +73,7 @@ public class AdminRequestController {
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"))) {
 
 
-            boolean isApproved = adminRequestService.approveRequest(id, currentUser);
+            boolean isApproved = adminRequestService.approveRequest(id);
             if (isApproved) {
                 return ResponseEntity.ok("Запрос успешно одобрен.");
             } else {
