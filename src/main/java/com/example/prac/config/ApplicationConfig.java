@@ -12,10 +12,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.security.MessageDigest;
@@ -30,12 +28,7 @@ public class ApplicationConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
-            }
-        };
+        return username -> userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
 
     @Bean
@@ -57,7 +50,7 @@ public class ApplicationConfig {
             @Override
             public String encode(CharSequence rawPassword) {
                 try {
-                    MessageDigest md = MessageDigest.getInstance("MD5");
+                    MessageDigest md = MessageDigest.getInstance("SHA-256");
                     byte[] digest = md.digest(rawPassword.toString().getBytes());
                     StringBuilder sb = new StringBuilder();
                     for (byte b : digest) {
