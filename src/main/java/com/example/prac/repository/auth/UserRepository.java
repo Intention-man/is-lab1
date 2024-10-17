@@ -1,65 +1,18 @@
 package com.example.prac.repository.auth;
 
+import com.example.prac.model.authEntity.Role;
 import com.example.prac.model.authEntity.User;
-import lombok.AllArgsConstructor;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
-@AllArgsConstructor
 @Repository
-public class UserRepository {
-
-    private final SessionFactory sessionFactory;
-
-    public void save(User user) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            session.save(user);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-    }
-
-    public Optional<User> findByUsername(String username) {
-        try (Session session = sessionFactory.openSession()) {
-            var query = session.createQuery("FROM User WHERE username = :username", User.class);
-            query.setParameter("username", username);
-            return query.uniqueResultOptional();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return Optional.empty();
-        }
-    }
-
-    public void update(User user) {
-        Transaction transaction = null;
-        try (Session session = sessionFactory.openSession()) {
-            transaction = session.beginTransaction();
-            session.update(user);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) {
-                transaction.rollback();
-            }
-            e.printStackTrace();
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public List<User> findAllAdmins() {
-        try (Session session = sessionFactory.openSession()) {
-            return session.createQuery("from User where role = 'ADMIN'").list();
-        }
-    }
-
+public interface UserRepository extends CrudRepository<User, Long>,
+        PagingAndSortingRepository<User, Long> {
+    boolean existsByUsername(String username);
+    Optional<User> findByUsername(String username);
+    List<User> findByRole(Role role);
 }

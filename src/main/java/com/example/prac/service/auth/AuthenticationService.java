@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
@@ -22,7 +23,7 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     public AuthenticationResponse register(RegisterRequest request){
-        boolean userExists = userRepository.findByUsername(request.getUsername()).isPresent();
+        boolean userExists = userRepository.existsByUsername(request.getUsername());
 
         if (userExists) {
             throw new UserAlreadyExistsException("A user with the same username already exists");
@@ -33,8 +34,6 @@ public class AuthenticationService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
-
-
 
         userRepository.save(user);
         var token = jwtService.generateToken(user);

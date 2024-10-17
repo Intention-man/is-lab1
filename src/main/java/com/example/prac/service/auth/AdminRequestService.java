@@ -6,65 +6,47 @@ import com.example.prac.model.authEntity.Role;
 import com.example.prac.model.authEntity.User;
 import com.example.prac.repository.auth.AdminRequestRepository;
 import com.example.prac.repository.auth.UserRepository;
-import com.example.prac.webSocket.AdminWebSocketHandler;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class AdminRequestService {
 
     private final AdminRequestRepository adminRequestRepository;
-    private final AdminWebSocketHandler adminWebSocketHandler;
     private final UserRepository userRepository;
 
     public boolean createAdminRequest(AdminRequest adminRequest) {
-        try {
-            if (this.getAdminRequestById(adminRequest.getId()) == null) {
-                adminRequestRepository.save(adminRequest);
-                return true;
-            } else {
-                return false;
-            }
-
-        } catch (Exception e) {
-            return false;
+        if (getAdminRequestById(adminRequest.getId()).isEmpty()) {
+            adminRequestRepository.save(adminRequest);
+            return true;
         }
+        return false;
     }
 
     public Optional<AdminRequest> findByRequester(User requester) {
         return adminRequestRepository.findByRequester(requester);
     }
 
-    public AdminRequest getAdminRequestById(Long id) {
+    public Optional<AdminRequest> getAdminRequestById(Long id) {
         return adminRequestRepository.findById(id);
     }
 
     public void updateAdminRequest(AdminRequest adminRequest) {
-        adminRequestRepository.update(adminRequest);
+        adminRequestRepository.save(adminRequest);
     }
 
     public List<User> getAllAdmins() {
-        return userRepository.findAllAdmins();
+        return userRepository.findByRole(Role.ADMIN);
     }
 
-    public boolean isRequestApprovedByAll(Long id) {
-        AdminRequest adminRequest = getAdminRequestById(id);
-        List<User> allAdmins = getAllAdmins();
-        return adminRequest.getApprovedBy().containsAll(allAdmins);
-    }
-
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true) // TODO может стоит убрать эту аннотацию
     public List<AdminRequest> getAllAdminRequests() {
-        return adminRequestRepository.findAll();
+        return (List<AdminRequest>) adminRequestRepository.findAll();
     }
 
     public boolean approveRequest(Long requestId, User currentUser) throws Exception {
@@ -96,3 +78,78 @@ public class AdminRequestService {
         userRepository.update(user);
     }
 }
+
+
+//@Service
+//public class UserService {
+//
+//    private final UserRepository userRepository;
+//    private final RoleRepository roleRepository;
+//    private final AdminRequestRepository adminRequestRepository;
+//    private final PasswordEncoder passwordEncoder;
+//
+//    @Autowired
+//    public UserService(UserRepository userRepository, RoleRepository roleRepository,
+//                       AdminRequestRepository adminRequestRepository, PasswordEncoder passwordEncoder) {
+//        this.userRepository =
+//
+//
+//                userRepository;
+//        this.roleRepository = roleRepository;
+//        this.adminRequestRepository = adminRequestRepository;
+//        this.passwordEncoder = passwordEncoder;
+//    }
+//
+//    public User registerNewUser(UserDTO userDTO) {
+//        User user = new User();
+//        user.setUsername(userDTO.getUsername());
+//        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
+//        user.setEnabled(true);
+//
+//        if (adminExists()) {
+//            throw new IllegalStateException("Admin approval required");
+//        }
+//
+//        Role userRole = roleRepository.findByName("ROLE_USER")
+//                .orElseThrow(() -> new RuntimeException("User Role not set"));
+//        user.setRoles(Set.of(userRole));
+//        return userRepository.save(user);
+//    }
+//
+//    private boolean adminExists() {
+//        return userRepository.findAll().stream().anyMatch(user -> user.getRoles().stream()
+//                .anyMatch(role -> role.getName().equals("ROLE_ADMIN")));
+//    }
+//
+//    public AdminRequest requestAdminRole(String username) {
+//        Optional<User> user = userRepository.findByUsername(username);
+//        if (user.isPresent() && !isAdmin(user.get())) {
+//            AdminRequest request = new AdminRequest();
+//            request.setUsername(username);
+//            request.setStatus(RequestStatus.PENDING);
+//            return adminRequestRepository.save(request);
+//        }
+//        throw new IllegalArgumentException("User not found or is already admin");
+//    }
+//
+//    private boolean isAdmin(User user) {
+//        return user.getRoles().stream().anyMatch(role -> role.getName().equals("ROLE_ADMIN"));
+//    }
+//
+//    public void approveAdminRequest(Long requestId, User approver) {
+//        AdminRequest request = adminRequestRepository.findById(requestId).orElseThrow(() -> new RuntimeException("Request not found"));
+//        if (isAdmin(approver)) {
+//            User user = userRepository.findByUsername(request.getUsername())
+//                    .orElseThrow(() -> new RuntimeException("User not found"));
+//            Role adminRole = roleRepository.findByName("ROLE_ADMIN")
+//                    .orElseThrow(() -> new RuntimeException("Admin Role not set"));
+//            user.getRoles().add(adminRole);
+//            userRepository.save(user);
+//            request.setStatus(RequestStatus.APPROVED);
+//            request.setApprover(approver);
+//            adminRequestRepository.save(request);
+//        } else {
+//            throw new AccessDeniedException("Only admins can approve requests");
+//        }
+//    }
+//}
